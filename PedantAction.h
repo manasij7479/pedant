@@ -7,36 +7,40 @@
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendAction.h"
 #include "clang/Tooling/Tooling.h"
+#include "Matchers.h"
 
 class PedantVisitor : public clang::RecursiveASTVisitor<PedantVisitor> {
 public:
-  bool VisitFunctionDecl(clang::FunctionDecl* Decl) {
-    if ( Decl->getDeclName().isIdentifier())
-      llvm::outs() << "Function:" << Decl->getName() << Decl->isCXXClassMember() << "\n"; // this part visibly works
-    return true;
-  }
-  bool VisitVarDecl(clang::VarDecl* Decl) {
-    if ( Decl->getDeclName().isIdentifier())
-      llvm::outs()<< "VAR: " << Decl->getName() << "\n";
-    return true;
-  }
+//  bool VisitFunctionDecl(clang::FunctionDecl* Decl) {
+//    if ( Decl->getDeclName().isIdentifier())
+//      llvm::outs() << "Function:" << Decl->getName() << Decl->isCXXClassMember() << "\n"; // this part visibly works
+//    return true;
+//  }
+//  bool VisitVarDecl(clang::VarDecl* Decl) {
+//    if ( Decl->getDeclName().isIdentifier())
+//      llvm::outs()<< "VAR: " << Decl->getName() << "\n";
+//    return true;
+//  }
   bool VisitCXXRecordDecl(clang::CXXRecordDecl* Decl) {
-    if ( Decl->getDeclName().isIdentifier())
-      llvm::outs() << "Class:" << Decl->getName() <<"\n";
+    if ( Decl->getDeclName().isIdentifier()){
+      auto fooMatcher = pedant::Matchers["foo"];
+      std::string name = Decl->getNameAsString();
+      llvm::outs() << name << fooMatcher(name) <<"\n";
     //Decl->dump();
+    }
     return true;
   }
-  bool VisitFieldDecl(clang::FieldDecl* Decl) {
-    if ( Decl->getDeclName().isIdentifier())
-      llvm::outs() << "Field :" << Decl->getName() <<"\n";
-    return true;
-  }
+//  bool VisitFieldDecl(clang::FieldDecl* Decl) {
+//    if ( Decl->getDeclName().isIdentifier())
+//      llvm::outs() << "Field :" << Decl->getName() <<"\n";
+//    return true;
+//  }
 
-  bool VisitCXXMethodDecl(clang::CXXMethodDecl* Decl) {
-    if ( Decl->getDeclName().isIdentifier())
-      llvm::outs() << "Method :" << Decl->getName() <<"\n";
-    return true;
-  }
+//  bool VisitCXXMethodDecl(clang::CXXMethodDecl* Decl) {
+//    if ( Decl->getDeclName().isIdentifier())
+//      llvm::outs() << "Method :" << Decl->getName() <<"\n";
+//    return true;
+//  }
 
 };
 
