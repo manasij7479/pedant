@@ -28,11 +28,11 @@ public:
     }
     return true;
   }
-//  bool VisitFieldDecl(clang::FieldDecl* Decl) {
-//    if ( Decl->getDeclName().isIdentifier())
-//      llvm::outs() << "Field :" << Decl->getName() <<"\n";
-//    return true;
-//  }
+  bool VisitFieldDecl(clang::FieldDecl* Decl) {
+    if ( Decl->getDeclName().isIdentifier())
+      m_Hist.matchName("member", Decl->getNameAsString());
+    return true;
+  }
 
 //  bool VisitCXXMethodDecl(clang::CXXMethodDecl* Decl) {
 //    if ( Decl->getDeclName().isIdentifier())

@@ -33,7 +33,7 @@ int main(int argc, const char **argv) {
   
   llvm::outs() << TestOption.getValue();
 
-  pedant::MatchHistory mHist; //fill required matches here
+  pedant::MatchHistory mHist({{"class", "CamelCase"}}, true); //fill requirements from options
 
   ClangTool Tool(OptionsParser.getCompilations(),
                  OptionsParser.getSourcePathList());
