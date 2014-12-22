@@ -11,6 +11,7 @@
 
 class PedantVisitor : public clang::RecursiveASTVisitor<PedantVisitor> {
 public:
+  PedantVisitor(pedant::MatchHistory& mh) : m_Hist(mh){}
 //  bool VisitFunctionDecl(clang::FunctionDecl* Decl) {
 //    if ( Decl->getDeclName().isIdentifier())
 //      llvm::outs() << "Function:" << Decl->getName() << Decl->isCXXClassMember() << "\n"; // this part visibly works
@@ -23,10 +24,7 @@ public:
 //  }
   bool VisitCXXRecordDecl(clang::CXXRecordDecl* Decl) {
     if ( Decl->getDeclName().isIdentifier()){
-      auto fooMatcher = pedant::Matchers["foo"];
-      std::string name = Decl->getNameAsString();
-      llvm::outs() << name << fooMatcher(name) <<"\n";
-    //Decl->dump();
+      m_Hist.matchName("class", Decl->getNameAsString());
     }
     return true;
   }
@@ -41,12 +39,15 @@ public:
 //      llvm::outs() << "Method :" << Decl->getName() <<"\n";
 //    return true;
 //  }
+private:
+  pedant::MatchHistory& m_Hist;
 
 };
 
 class PedantConsumer : public clang::ASTConsumer {
 public:
-  PedantConsumer(clang::CompilerInstance& CI):Compiler(CI){};
+  PedantConsumer(clang::CompilerInstance& CI, pedant::MatchHistory& mh)
+      :Compiler(CI), Visitor(mh){}
 
   virtual void HandleTranslationUnit(clang::ASTContext &Context) {
     // Traversing the translation unit decl via a RecursiveASTVisitor
@@ -55,17 +56,20 @@ public:
   }
 private:
   // A RecursiveASTVisitor implementation.
-  PedantVisitor Visitor;
   clang::CompilerInstance& Compiler;
+  PedantVisitor Visitor;
 };
 
 class PedantAction : public clang::ASTFrontendAction {
 public:
+  PedantAction(pedant::MatchHistory& mh):m_Hist(mh){}
   virtual std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
     clang::CompilerInstance &Compiler, llvm::StringRef InFile) {
       return std::unique_ptr<clang::ASTConsumer>(
-        new PedantConsumer(Compiler));
+        new PedantConsumer(Compiler, m_Hist));
   }
+private:
+  pedant::MatchHistory& m_Hist;
 };
 
 #endif

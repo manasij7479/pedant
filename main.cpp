@@ -6,7 +6,7 @@
 #include "llvm/Support/CommandLine.h"
 
 #include "PedantAction.h"
-
+#include "Matchers.h"
 using namespace clang::tooling;
 using namespace llvm;
 
@@ -32,7 +32,21 @@ int main(int argc, const char **argv) {
   CommonOptionsParser OptionsParser(argc, argv, PedantCategory);
   
   llvm::outs() << TestOption.getValue();
+
+  pedant::MatchHistory mHist; //fill required matches here
+
   ClangTool Tool(OptionsParser.getCompilations(),
                  OptionsParser.getSourcePathList());
-  return Tool.run(newFrontendActionFactory<PedantAction>().get());
+
+  class PedantFrontendActionFactory : public FrontendActionFactory {
+  public:
+    PedantFrontendActionFactory(pedant::MatchHistory& mh):m_Hist(mh){}
+    clang::FrontendAction *create() override { return new PedantAction(m_Hist); }
+  private:
+    pedant::MatchHistory& m_Hist;
+  };
+
+  auto result = Tool.run(new PedantFrontendActionFactory(mHist));
+  mHist.dump();
+  return result;
 }
