@@ -15,9 +15,15 @@ using namespace llvm;
 static llvm::cl::OptionCategory PedantCategory("pedant options");
 
 static cl::opt<std::string>
-TestOption(
-    "test-option",
-    cl::desc("This is a test option.\n"),
+ClassNames(
+    "class",
+    cl::desc("Matcher for class names"),
+    cl::cat(PedantCategory));
+
+static cl::opt<std::string>
+FunctionNames(
+    "function",
+    cl::desc("Matcher for function names"),
     cl::cat(PedantCategory));
 
 // CommonOptionsParser declares HelpMessage with a description of the common
@@ -28,12 +34,28 @@ static cl::extrahelp CommonHelp(CommonOptionsParser::HelpMessage);
 // A help message for this specific tool can be added afterwards.
 static cl::extrahelp MoreHelp("\nMore help text...");
 
+std::map<std::string,std::string> parseReqs() {
+  //TODO: sanitize user inputs
+  std::map<std::string,std::string> result;
+  if (ClassNames.getNumOccurrences() != 0 ){
+    std::string matcher = ClassNames.getValue();
+    result["class"] = matcher;
+  }
+  if (FunctionNames.getNumOccurrences() != 0 ){
+    std::string matcher = FunctionNames.getValue();
+    result["function"] = matcher;
+  }
+
+
+
+
+  return result;
+}
+
 int main(int argc, const char **argv) {
   CommonOptionsParser OptionsParser(argc, argv, PedantCategory);
-  
-  llvm::outs() << TestOption.getValue();
 
-  pedant::MatchHistory mHist({{"class", "CamelCase"}}, true); //fill requirements from options
+  pedant::MatchHistory mHist(parseReqs(), true); //fill requirements from options
 
   ClangTool Tool(OptionsParser.getCompilations(),
                  OptionsParser.getSourcePathList());

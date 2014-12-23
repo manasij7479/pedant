@@ -12,20 +12,19 @@
 class PedantVisitor : public clang::RecursiveASTVisitor<PedantVisitor> {
 public:
   PedantVisitor(pedant::MatchHistory& mh) : m_Hist(mh){}
-//  bool VisitFunctionDecl(clang::FunctionDecl* Decl) {
-//    if ( Decl->getDeclName().isIdentifier())
-//      llvm::outs() << "Function:" << Decl->getName() << Decl->isCXXClassMember() << "\n"; // this part visibly works
-//    return true;
-//  }
+  bool VisitFunctionDecl(clang::FunctionDecl* Decl) {
+    if ( Decl->getDeclName().isIdentifier() && !Decl->isCXXClassMember())
+      m_Hist.matchName("function", Decl->getNameAsString());
+    return true;
+  }
 //  bool VisitVarDecl(clang::VarDecl* Decl) {
 //    if ( Decl->getDeclName().isIdentifier())
 //      llvm::outs()<< "VAR: " << Decl->getName() << "\n";
 //    return true;
 //  }
   bool VisitCXXRecordDecl(clang::CXXRecordDecl* Decl) {
-    if ( Decl->getDeclName().isIdentifier()){
+    if ( Decl->getDeclName().isIdentifier())
       m_Hist.matchName("class", Decl->getNameAsString());
-    }
     return true;
   }
   bool VisitFieldDecl(clang::FieldDecl* Decl) {
