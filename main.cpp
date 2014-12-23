@@ -26,6 +26,19 @@ FunctionNames(
     cl::desc("Matcher for function names"),
     cl::cat(PedantCategory));
 
+static cl::opt<std::string>
+MethodNames(
+    "method",
+    cl::desc("Matcher for member function/method names"),
+    cl::cat(PedantCategory));
+
+static cl::opt<std::string>
+MemberNames(
+    "member",
+    cl::desc("Matcher for member variable/object names"),
+    cl::cat(PedantCategory));
+
+
 // CommonOptionsParser declares HelpMessage with a description of the common
 // command-line options related to the compilation database and input files.
 // It's nice to have this help message in all tools.
@@ -45,10 +58,14 @@ std::map<std::string,std::string> parseReqs() {
     std::string matcher = FunctionNames.getValue();
     result["function"] = matcher;
   }
-
-
-
-
+  if (MethodNames.getNumOccurrences() != 0 ){
+    std::string matcher = MethodNames.getValue();
+    result["method"] = matcher;
+  }
+  if (MemberNames.getNumOccurrences() != 0 ){
+    std::string matcher = MemberNames.getValue();
+    result["member"] = matcher;
+  }
   return result;
 }
 

@@ -33,11 +33,11 @@ public:
     return true;
   }
 
-//  bool VisitCXXMethodDecl(clang::CXXMethodDecl* Decl) {
-//    if ( Decl->getDeclName().isIdentifier())
-//      llvm::outs() << "Method :" << Decl->getName() <<"\n";
-//    return true;
-//  }
+  bool VisitCXXMethodDecl(clang::CXXMethodDecl* Decl) {
+    if ( Decl->getDeclName().isIdentifier())
+      m_Hist.matchName("method", Decl->getNameAsString());
+    return true;
+  }
 private:
   pedant::MatchHistory& m_Hist;
 
