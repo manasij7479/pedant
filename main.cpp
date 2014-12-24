@@ -47,32 +47,44 @@ static cl::extrahelp CommonHelp(CommonOptionsParser::HelpMessage);
 // A help message for this specific tool can be added afterwards.
 static cl::extrahelp MoreHelp("\nMore help text...");
 
-std::map<std::string,std::string> parseReqs() {
+void parseReqs(pedant::MatchHistory& mHist) {
   //TODO: sanitize user inputs
-  std::map<std::string,std::string> result;
+  std::map<std::string,std::string> reqMap;
   if (ClassNames.getNumOccurrences() != 0 ){
     std::string matcher = ClassNames.getValue();
-    result["class"] = matcher;
+    reqMap["class"] = matcher;
   }
   if (FunctionNames.getNumOccurrences() != 0 ){
     std::string matcher = FunctionNames.getValue();
-    result["function"] = matcher;
+    reqMap["function"] = matcher;
   }
   if (MethodNames.getNumOccurrences() != 0 ){
     std::string matcher = MethodNames.getValue();
-    result["method"] = matcher;
+    reqMap["method"] = matcher;
   }
   if (MemberNames.getNumOccurrences() != 0 ){
     std::string matcher = MemberNames.getValue();
-    result["member"] = matcher;
+    reqMap["member"] = matcher;
   }
-  return result;
+  auto&& stdMatchers = pedant::getStandardMatchers();
+  for(auto req: reqMap) {
+    auto it = stdMatchers.find(req.second);
+    if (it != stdMatchers.end()) {
+      mHist.addMatcher(req.second, it->second);
+      mHist.addRequirement(req.first, req.second);
+    }
+    else {
+      //TODO: ERROR
+    }
+  }
 }
 
 int main(int argc, const char **argv) {
   CommonOptionsParser OptionsParser(argc, argv, PedantCategory);
 
-  pedant::MatchHistory mHist(parseReqs(), true); //fill requirements from options
+
+  pedant::MatchHistory mHist(true);
+  parseReqs(mHist);//fill requirements from options
 
   ClangTool Tool(OptionsParser.getCompilations(),
                  OptionsParser.getSourcePathList());

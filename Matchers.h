@@ -18,6 +18,16 @@ namespace pedant {
     };
   }
 
+  std::map<std::string, Matcher> getStandardMatchers() {
+    std::map<std::string, Matcher> map;
+      map["all"] = [](std::string){return true;};
+      map["fooprefixed"] = GeneratePrefixMatcher("foo"); //for testing
+      map["CamelCase"] = GenerateRegexMatcher("([A-Z].*)+");
+      map["camelCaseLite"] = GenerateRegexMatcher("[^A-Z]+([A-Z].*)+");
+      map["usep_lcase"] = GenerateRegexMatcher("([^A-Z]+)(_[^A-Z]+)*");
+    return map;
+  }
+
   extern std::map<std::string, Matcher> StandardMatchers; //TODO: use these later
 
   class MatchHistory {
@@ -25,13 +35,19 @@ namespace pedant {
     template <typename T>
     using SMap = std::map<std::string, T>;
 
-    MatchHistory(SMap<std::string> required = SMap<std::string>(), bool onlyReq = false)
-        : m_Required(required), m_OnlyReq(onlyReq) {
-           init_matchers(m_Matchers);
+    MatchHistory(bool onlyReq = false)
+        :m_OnlyReq(onlyReq) {
+      if (!onlyReq)
+        m_Matchers = getStandardMatchers();
     }
     void addMatcher(std::string name, Matcher mat) {
       m_Matchers[name] = mat;
     }
+    void addRequirement(std::string type, std::string matcherName) {
+      //TODO: check if matcher exists
+      m_Required[type] = matcherName;
+    }
+
     void matchName(std::string type, std::string name) {
       if (m_OnlyReq) {
         auto it = m_Required.find(type);
@@ -61,15 +77,6 @@ namespace pedant {
     }
 
   private:
-    void init_matchers(SMap<Matcher>& map) {
-      // Move these somewhere else
-      map["all"] = [](std::string){return true;};
-      map["fooprefixed"] = GeneratePrefixMatcher("foo"); //for testing
-      map["CamelCase"] = GenerateRegexMatcher("([A-Z].*)+");
-      map["camelCaseLite"] = GenerateRegexMatcher("[^A-Z]+([A-Z].*)+");
-      map["usep_lcase"] = GenerateRegexMatcher("([^A-Z]+)(_[^A-Z]+)*");
-
-    }
 
     SMap<std::string> m_Required;
     SMap<Matcher> m_Matchers;
