@@ -21,6 +21,7 @@ namespace pedant {
   std::map<std::string, Matcher> getStandardMatchers() {
     std::map<std::string, Matcher> map;
       map["all"] = [](std::string){return true;};
+      map["none"] = [](std::string){return false;};
       map["fooprefixed"] = GeneratePrefixMatcher("foo"); //for testing
       map["CamelCase"] = GenerateRegexMatcher("([A-Z].*)+");
       map["camelCaseLite"] = GenerateRegexMatcher("[^A-Z]+([A-Z].*)+");
