@@ -2,9 +2,9 @@
 Pedant is a clang tool for catching inconsistent identifier names in your code.
 
 ## Build  
-This is only configured to be built with cmake at this moment.  
 1. Clone the repo in `clang/tools/extra`  
 2. Add `add_subdirectory(pedant)` to `clang/tools/extra/CMakeLists.txt`  
+   or `pedant` to the DIRS variable in `clang/tools/extra/Makefile`  
 3. Build  
   
 ## Example Invocation:  
@@ -31,7 +31,6 @@ This checks whether the class members in b.cpp have `m_` as a prefix.
 * regex
   
 ## TODO:
-* Add Makefile for 'configure' build.
 * More Match targets.
 * Test cases.
 * Use proper diagnostics instead of printing out results.
