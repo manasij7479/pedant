@@ -1,29 +1,25 @@
-# pedant
-=======
-
+# pedant  
 Pedant is a clang tool for catching inconsistent identifier names in your code.
 
-## Build
-=======
-This is only configured to be built with cmake at this moment.
-1. Clone the repo in clang/tools/extra
-2. Add
-   `add_subdirectory(pedant)`
-   to clang/tools/extra/CMakeLists.txt
-3. Build
+## Build  
+This is only configured to be built with cmake at this moment.  
+1. Clone the repo in clang/tools/extra  
+2. Add  
+   `add_subdirectory(pedant)`  
+   to clang/tools/extra/CMakeLists.txt  
+3. Build  
+  
+## Example Invocation:  
+`pedant ~/b.cpp -member=prefix-m_ --`  
+This checks whether the class members in b.cpp have `m_` as a prefix.  
 
-## Example Invocation:
-=====================
-`pedant ~/b.cpp -member=prefix-m_ --`
-This checks
-
-## Available Options:
-====================
+## Available Options:  
 ### Match Targets:
 * class
 * function
 * member
-* method
+* method  
+   
 ### Preset Matchers:
 * all
 * none
@@ -31,6 +27,7 @@ This checks
 * CamelCase
 * camelCaseLite
 * usep_lcase
+  
 ### Dynamic Matchers:
 * prefix
 * regex
