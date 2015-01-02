@@ -67,13 +67,20 @@ void parseReqs(pedant::MatchHistory& mHist) {
     reqMap["member"] = matcher;
   }
   auto&& stdMatchers = pedant::getStandardMatchers();
-  for(auto req: reqMap) {
+  for(auto&& req: reqMap) {
     auto it = stdMatchers.find(req.second);
     if (it != stdMatchers.end()) {
       mHist.addMatcher(req.second, it->second);
       mHist.addRequirement(req.first, req.second);
     }
     else {
+      llvm::StringRef str = req.second;
+      const std::string prefix_op = "prefix-";
+      if (str.startswith(prefix_op)) {
+        std::string prefix = str.substr(prefix_op.length());
+        mHist.addMatcher(req.second, pedant::GeneratePrefixMatcher(prefix));
+        mHist.addRequirement(req.first, req.second);
+      }
       //TODO: ERROR
     }
   }
