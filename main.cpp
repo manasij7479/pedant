@@ -81,6 +81,13 @@ void parseReqs(pedant::MatchHistory& mHist) {
         mHist.addMatcher(req.second, pedant::GeneratePrefixMatcher(prefix));
         mHist.addRequirement(req.first, req.second);
       }
+      const std::string regex_op = "regex-";
+      if (str.startswith(regex_op)) {
+        std::string regex = str.substr(regex_op.length());
+        llvm::outs() << "INPUT:" <<regex<<"\n";
+        mHist.addMatcher(req.second, pedant::GenerateRegexMatcher(regex));
+        mHist.addRequirement(req.first, req.second);
+      }
       //TODO: ERROR
     }
   }
